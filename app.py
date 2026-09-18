@@ -16,7 +16,6 @@ ami = AMIConnector(
     secret=os.getenv("AMI_SECRET", "queue123")
 )
 
-
 @app.route('/', methods=['GET'])
 def index():
     return jsonify({'status': 'online', 'message': 'API is running. Query /api/queues'}), 200
@@ -60,7 +59,6 @@ def hangup_call():
         return jsonify({'status': 'success', 'message': 'Call hung up'}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(
