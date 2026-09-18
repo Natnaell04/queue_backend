@@ -15,24 +15,20 @@ class AMIConnector:
         s.settimeout(5)
         s.connect((self.host, self.port))
 
-        # Read welcome banner
         s.recv(1024)
 
-        # Login Action
         login_cmd = f"Action: Login\r\nUsername: {self.user}\r\nSecret: {self.secret}\r\n\r\n"
         s.sendall(login_cmd.encode('utf-8'))
 
-        # Send Target Action
         cmd_str = ""
         for k, v in action_dict.items():
             cmd_str += f"{k}: {v}\r\n"
         cmd_str += "\r\n"
         s.sendall(cmd_str.encode('utf-8'))
 
-        # Logoff
+        
         s.sendall(b"Action: Logoff\r\n\r\n")
 
-        # Collect response
         response = ""
         while True:
             try:
@@ -63,7 +59,6 @@ class AMIConnector:
 
             event = event_dict.get('Event', '')
 
-            # Parse Queue Overview
             if event == 'QueueParams':
                 q_name = event_dict.get('Queue')
                 if q_name:
@@ -76,8 +71,7 @@ class AMIConnector:
                         'agents': [],
                         'callers': []
                     }
-
-            # Parse Agents
+                    
             elif event == 'QueueMember':
                 q_name = event_dict.get('Queue')
                 if q_name in queues_data:
@@ -90,7 +84,6 @@ class AMIConnector:
                         'pause_reason': event_dict.get('PausedReason', 'N/A')
                     })
 
-            # Parse Live Callers
             elif event == 'QueueEntry':
                 q_name = event_dict.get('Queue')
                 if q_name in queues_data:
